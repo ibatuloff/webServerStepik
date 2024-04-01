@@ -2,7 +2,6 @@ package servlets;
 
 import AccountService.AccountService;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,18 +14,25 @@ public class SignInServlet extends HttpServlet {
         this.accountService = accountService;
     }
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
         String login = request.getParameter("login");
         String password = request.getParameter("password");
 
         response.setContentType("text/html;charset=utf-8");
 
-        if (accountService.signIn(login, password)) {
+        // Если пользователь зарегистрирован, то устанавливаем статус 200 OK
+        // В противном случае устанавливаем статус 401 UNAUTHORIZED
+        boolean loginned = accountService.signIn(login, password);
+
+        if (loginned) {
             response.getWriter().println("Authorized: " + login);
-//            response.setStatus(HttpServletResponse.SC_OK);
+            response.setStatus(HttpServletResponse.SC_OK);
         } else {
             response.getWriter().println("Unauthorized");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
+
     }
 }

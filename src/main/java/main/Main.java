@@ -1,7 +1,7 @@
 package main;
 
 import AccountService.AccountService;
-import AccountService.UserProfile;
+import database.DatabaseService;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
@@ -13,26 +13,28 @@ import servlets.SignUpServlet;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        AccountService accountService = new AccountService();
+        try {
+            DatabaseService dbService = new DatabaseService();
+            AccountService accountService = new AccountService(dbService);
+            ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+            context.addServlet(new ServletHolder(new SignUpServlet(accountService)), "/signup");
+            context.addServlet(new ServletHolder(new SignInServlet(accountService)), "/signin");
 
-        accountService.addNewUser(new UserProfile("admin", "admin"));
+            ResourceHandler resourceHandler = new ResourceHandler();
+            resourceHandler.setResourceBase("public_html");
 
-        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.addServlet(new ServletHolder(new SignUpServlet(accountService)), "/signup");
-        context.addServlet(new ServletHolder(new SignInServlet(accountService)), "/signin");
+            HandlerList handlers = new HandlerList();
+//            final Handler[] handler = {resource_handler, context};
+            handlers.setHandlers(new Handler[] {resourceHandler, context});
 
-        ResourceHandler resourceHandler = new ResourceHandler();
-        resourceHandler.setResourceBase("public_html");
+            Server server = new Server(8080);
+            server.setHandler(handlers);
 
-        HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[] {resourceHandler, context});
-
-
-        Server server = new Server(8080);
-        server.setHandler(handlers);
-        server.start();
-        java.util.logging.Logger.getGlobal().info("Server started");
-        System.out.println("Server started");
-        server.join();
+            server.start();
+            System.out.println("Server started");
+            server.join();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
     }
 }
