@@ -1,38 +1,50 @@
 package servlets;
 
-import AccountService.AccountService;
+import dbService.DBException;
+import dbService.DBService;
+import dbService.datasets.UsersDataSet;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class SignInServlet extends HttpServlet {
-    private final AccountService accountService;
 
-    public SignInServlet(AccountService accountService) {
-        this.accountService = accountService;
+public class SignInServlet extends HttpServlet {
+
+    private DBService dbService;
+
+    public SignInServlet(DBService dbService) {
+        this.dbService = dbService;
     }
 
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String login = req.getParameter("login");
+        String password = req.getParameter("password");
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        resp.setContentType("text/html;charset=utf-8");
 
-        String login = request.getParameter("login");
-        String password = request.getParameter("password");
+        if (login != null && !login.isEmpty() && password != null && !password.isEmpty()) {
+            try {
+                UsersDataSet usersDataSet = dbService.getUserByLoginAndPassword(login, password);
 
-        response.setContentType("text/html;charset=utf-8");
+                if (usersDataSet != null) {
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                    resp.getWriter().println("Authorized");
+                } else {
+                    resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    resp.getWriter().println("Unauthorized");
+                }
 
-        // Если пользователь зарегистрирован, то устанавливаем статус 200 OK
-        // В противном случае устанавливаем статус 401 UNAUTHORIZED
-        boolean loginned = accountService.signIn(login, password);
-
-        if (loginned) {
-            response.getWriter().println("Authorized: " + login);
-            response.setStatus(HttpServletResponse.SC_OK);
+            } catch (DBException e) {
+                e.printStackTrace();
+            }
         } else {
-            response.getWriter().println("Unauthorized");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.getWriter().println("Unauthorized");
         }
-
+        return;
     }
 }

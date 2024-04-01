@@ -1,6 +1,4 @@
-package database.executor;
-
-import database.executor.ResultHandler;
+package dbService.executor;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -20,7 +18,9 @@ public class Executor {
         stmt.close();
     }
 
-    public <T> T execQuery(String query, ResultHandler<T> handler) throws SQLException {
+    public <T> T execQuery(String query,
+                           ResultHandler<T> handler)
+            throws SQLException {
         Statement stmt = connection.createStatement();
         stmt.execute(query);
         ResultSet result = stmt.getResultSet();
@@ -30,5 +30,4 @@ public class Executor {
 
         return value;
     }
-
 }
