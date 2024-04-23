@@ -5,7 +5,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import reflection.ReflectionHelper;
 import org.xml.sax.Attributes;
 
-@SuppressWarnings("UnusedDeclaration")
+
 public class SaxHandler extends DefaultHandler {
     private static final String CLASSNAME = "class";
     private String element = null;

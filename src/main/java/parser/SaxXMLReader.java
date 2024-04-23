@@ -1,8 +1,8 @@
 package parser;
 
-
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
 public class SaxXMLReader {
     public static Object readXML(String xmlFile) {
         try {
@@ -18,6 +18,5 @@ public class SaxXMLReader {
             e.printStackTrace();
         }
         return null;
-
     }
 }

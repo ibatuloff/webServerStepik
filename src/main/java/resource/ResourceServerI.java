@@ -1,11 +1,33 @@
 package resource;
 
-public interface ResourceServerI {
-    String getName();
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import resources.ResourceService;
+import resources.ResourceTest;
 
-    int getAge();
+public class ResourceServerI implements ResourceServer {
+    private ResourceTest resource;
+    static final Logger logger = LogManager.getLogger(ResourceServerI.class.getName());
 
-    void setName(String name);
+    public ResourceServerI() { }
 
-    void setAge(int age);
+    @Override
+    public String getName() {
+        return resource.getName();
+    }
+
+    @Override
+    public int getAge() {
+        return resource.getAge();
+    }
+
+    public String getNameClass() {
+        return resource.getClass().toString();
+    }
+
+    @Override
+    public void readResource(String path) {
+        resource = ResourceService.instance().getResource(path, ResourceTest.class);
+        logger.info("Resource loaded");
+    }
 }

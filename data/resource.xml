@@ -1,4 +1,4 @@
-<class name="resource.Resource">
+<class name="resource.ResourceServer">
     <name>stepan</name>
     <age>20</age>
 </class>
